@@ -1,19 +1,22 @@
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { S3SyncClient } from "s3-sync-client"
+
+import { awsBucket, awsRegion, awsAcessKeyId, awsSecretAcessKey } from'../../config.json'
 
 const s3Client = new S3Client({
-    region: process.env.AWS_REGION,
+    region: awsRegion,
     credentials: {
-        accessKeyId: process.env.AWS_ACESSKEYID,
-        secretAccessKey: process.env.AWS_SECRETACESSKEY
+        accessKeyId: awsAcessKeyId,
+        secretAccessKey: awsSecretAcessKey
     }
 })
 
-const bucket = process.env.AWS_BUCKET;
+const { sync } = new S3SyncClient({client: s3Client })
 
 async function getObjectURL(key: string) {
     const command = new GetObjectCommand({
-      Bucket: bucket,
+      Bucket: awsBucket,
       Key: key
     });
     const url = await getSignedUrl(s3Client, command);
@@ -22,11 +25,11 @@ async function getObjectURL(key: string) {
 
 async function getObject(key: string) {
     const command = new GetObjectCommand({
-        Bucket: bucket,
+        Bucket: awsBucket,
         Key: key
     })
     const res = await s3Client.send(command)
     return await res.Body.transformToString()
 }
 
-export {getObject, getObjectURL}
+export {getObject, getObjectURL, sync, awsBucket}
