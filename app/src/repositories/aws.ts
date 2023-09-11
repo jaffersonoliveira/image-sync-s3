@@ -29,7 +29,7 @@ async function getObject(key: string) {
         Key: key
     })
     const res = await s3Client.send(command)
-    return await res.Body.transformToString()
+    return res.Body
 }
 
 export {getObject, getObjectURL, sync}
