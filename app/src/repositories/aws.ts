@@ -32,4 +32,4 @@ async function getObject(key: string) {
     return await res.Body.transformToString()
 }
 
-export {getObject, getObjectURL, sync, awsBucket}
+export {getObject, getObjectURL, sync}

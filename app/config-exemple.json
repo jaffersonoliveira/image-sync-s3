@@ -2,5 +2,6 @@
     "awsRegion": "",
     "awsAcessKeyId": "",
     "awsSecretAcessKey": "",
-    "awsBucket": ""
+    "awsBucket": "",
+    "pathLocalBucket": ""
 }

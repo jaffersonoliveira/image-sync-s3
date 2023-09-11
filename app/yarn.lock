@@ -5984,6 +5984,11 @@ rxjs@^7.8.0:
   dependencies:
     tslib "^2.1.0"
 
+s3-sync-client@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/s3-sync-client/-/s3-sync-client-4.3.1.tgz#ef926ab2e282032d7d888d46d3f74e4b819dec65"
+  integrity sha512-nWbbKCNnXmWvD8XwdWhX25VNxIhgQEm6vXqSYjwyBNZI07OuMOr/LNOYmEPcLfqFFjy55ZNcFSBI18W29ybuUw==
+
 safe-array-concat@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/safe-array-concat/-/safe-array-concat-1.0.0.tgz#2064223cba3c08d2ee05148eedbc563cd6d84060"
