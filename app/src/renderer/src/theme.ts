@@ -1,6 +1,13 @@
-import { createTheme } from '@mui/material/styles';
-import { red } from '@mui/material/colors'
- 
-const theme = createTheme({palette:{error:{main: red.A400}}})
+import { ThemeOptions, createTheme } from '@mui/material/styles';
+import { blueGrey, red } from '@mui/material/colors'
+
+const themeOpt: ThemeOptions = {
+    palette: {
+        error: { main: red.A400 },
+        primary: { main: blueGrey[900] },
+    }
+}
+
+const theme = createTheme(themeOpt)
 
 export default theme;
