@@ -1,19 +1,20 @@
 import React from 'react';
-import * as ReactDOM from 'react-dom';
-
-import App from './App';
+import ReactDOM from 'react-dom/client';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import theme from './theme';
+import AppRoutes from './AppRoutes';
 
-function myrender() {
-  ReactDOM.render(
-    <React.StrictMode>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </React.StrictMode>
-    , document.body);
+const MainComponent = () => (
+  <React.StrictMode>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppRoutes />
+    </ThemeProvider>
+  </React.StrictMode>
+)
+
+function appRender() {
+  ReactDOM.createRoot(document.getElementById('root')).render((<MainComponent />));
 }
 
-myrender();
+appRender();
