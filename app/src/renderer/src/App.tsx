@@ -8,7 +8,7 @@ function App() {
     <>
       <Stack direction='column'>
         <TopBar />
-        <Box>
+        <Box p={3}>
           <Outlet />
         </Box>
       </Stack>

@@ -1,14 +1,20 @@
-import { Button, FormControl, FormLabel, Input, Typography } from "@mui/material";
+import { Button, Grid, TextField, Typography } from "@mui/material";
 import config from "../../../../config.json"
 
 function Setup() {
   return (
     <>
-      <FormControl>
-        <FormLabel><Typography variant="h5" fontWeight='700'>Configurações</Typography></FormLabel>
-        {Object.entries(config).map((entrie) => <Input placeholder={entrie[0]} />)}
+        <Typography variant="h5" fontWeight='700'>Configurações</Typography>
+        <Grid container spacing={3} p={2}>
+          {
+            Object.entries(config).map((entrie) => (
+              <Grid item xs={6}>
+                <TextField label={entrie[0]} required fullWidth value={entrie[1]} variant="standard" />
+              </Grid>
+            ))
+          }
+        </Grid>
         <Button variant="contained">Salvar</Button>
-      </FormControl>
     </>
   )
 }
