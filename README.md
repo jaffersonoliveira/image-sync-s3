@@ -14,4 +14,12 @@ The image-sync-s3 project combines Electron.js, TypeScript, and React.js to offe
 
 - Node.js and npm installed.
 - Valid AWS credentials configured for Amazon S3 access.
-.
+
+## Install && use
+
+```
+  git clone git@github.com:jaffersonoliveira/image-sync-s3.git
+  cd image-sync-s3/app
+  yarn
+  yarn start
+```
