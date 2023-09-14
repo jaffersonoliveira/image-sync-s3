@@ -5,6 +5,7 @@ const themeOpt: ThemeOptions = {
     palette: {
         error: { main: red.A400 },
         primary: { main: blueGrey[900] },
+        secondary: {main: red[500]}
     }
 }
 
