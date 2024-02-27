@@ -1,6 +1,9 @@
-import { getObject, sync } from "../repositories/aws"
-import { pathLocalBucket, awsBucket } from "../../config.json"
 import fs from 'fs'
+
+import { getObject, sync, uploadFile } from "../repositories/aws"
+import { pathLocalBucket, awsBucket } from "../../config.json"
+import { files2Upload } from "./pathService";
+import { checkAlreadyExists, post } from '../repositories/model/logModel';
 
 async function syncBucket() {
     sync(pathLocalBucket, `s3://${awsBucket}`);
@@ -16,4 +19,23 @@ async function getObjectByKey(key: string, path: string){
     saveStreamToFile(objStream, filePath);
 }
 
-export { syncBucket, getObjectByKey }
+async function filesSync(){
+    console.log('lendo arquivos a serem enviados');
+    const files = files2Upload()
+    console.log('iniciando envio');
+    for (const file of files) {
+        console.log('checando');
+        const fileUploaded = await checkAlreadyExists(file.fileKey);
+        if (!fileUploaded) {
+            console.log('enviando');
+            const res = await uploadFile(file.fileKey, file.filePath);
+            console.log('guardando');
+            post({file_path: file.filePath, file_key: file.fileKey, action: 'post', status: `${res.$metadata.httpStatusCode}`})
+        }
+    }
+    console.log('envio encerrado')
+}
+
+filesSync()
+
+export { syncBucket, getObjectByKey, filesSync }
