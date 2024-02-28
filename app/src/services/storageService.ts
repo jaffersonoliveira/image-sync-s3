@@ -36,6 +36,4 @@ async function filesSync(){
     console.log('envio encerrado')
 }
 
-filesSync()
-
 export { syncBucket, getObjectByKey, filesSync }

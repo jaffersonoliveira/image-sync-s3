@@ -1,4 +1,4 @@
-import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, GetObjectCommand, PutObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
 import { createReadStream} from "fs";
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3SyncClient } from "s3-sync-client"
@@ -14,6 +14,12 @@ const s3Client = new S3Client({
 })
 
 const { sync } = new S3SyncClient({client: s3Client })
+
+async function search(text: string){
+  const command = new ListObjectsV2Command({Bucket: awsBucket, Prefix: text});
+  const res = await s3Client.send(command)
+  return res.Contents
+}
 
 async function uploadFile(fileKey: string, filePath: string) {
     console.log('carregando aquivo')
@@ -54,4 +60,4 @@ async function getObject(key: string) {
     return res.Body
 }
 
-export {getObject, getObjectURL, sync, uploadFile}
+export {getObject, getObjectURL, sync, uploadFile, search} 

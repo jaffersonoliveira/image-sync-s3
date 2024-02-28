@@ -10,6 +10,4 @@ const pool = new Pool({
 
 const query =  (text: string, params?: any) => pool.query(text, params)
 
-export {
-  query
-}
+export { query }

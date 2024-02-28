@@ -16,6 +16,8 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
+import { Autorenew } from '@mui/icons-material';
+import { ipcRenderer } from 'electron';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -60,6 +62,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function TopBar() {
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
 
@@ -167,8 +170,9 @@ export default function TopBar() {
             color="inherit"
             aria-label="open drawer"
             sx={{ mr: 2 }}
+            onClick={() => window.electronAPI.file_sync() }
           >
-            <MenuIcon />
+            <Autorenew />
           </IconButton>
           <Typography
             variant="h6"
@@ -180,15 +184,16 @@ export default function TopBar() {
           </Typography>
           <Search>
             <SearchIconWrapper>
-              <SearchIcon />
+              <SearchIcon/>    
             </SearchIconWrapper>
-            <StyledInputBase
+            <StyledInputBase    
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              onKeyDown={(e)=> {(e.code==='Enter') && window.electronAPI.search(e.currentTarget.value); navigate('/search-result')}}
             />
           </Search>
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+{/*           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
@@ -226,7 +231,7 @@ export default function TopBar() {
             >
               <MoreIcon />
             </IconButton>
-          </Box>
+          </Box> */}
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
