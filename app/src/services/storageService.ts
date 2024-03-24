@@ -10,13 +10,13 @@ async function syncBucket() {
 }
 
 async function saveStreamToFile(stream: any, filePath: string){
-    stream.pipe(fs.createWriteStream(filePath));
+    await stream.pipe(fs.createWriteStream(filePath)); 
 }
 
 async function getObjectByKey(key: string, path: string){
     const objStream = await getObject(key);
-    const filePath = `${path}/${key.split('/').join('-')}`;
-    saveStreamToFile(objStream, filePath);
+    const filePath = path//`${path}/${key.split('/').join('-')}`;
+    await saveStreamToFile(objStream, filePath);
 }
 
 async function filesSync(){
