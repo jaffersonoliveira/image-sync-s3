@@ -10,10 +10,41 @@ async function checkAlreadyExists(key: string) {
     return res.rows[0].exist
 }
 
-async function post(values: {file_path: string, file_key: string, action: string, status: string}) {
-    const stringQuery = `insert into log(log_timestamp, log_file_path, log_file_key, log_action, log_status) values (now(),$1,$2,$3,$4) returning *`;
+interface IPost {
+    file_path: string, 
+    file_key: string, 
+    action: string, 
+    status: string,  
+    modality: string,
+    patient_name: string,
+    patient_id: string,
+    study_date: string
+}
+async function post(values: IPost) {
+    console.log(values);
+    const stringQuery = `insert into log(log_timestamp, log_file_path, log_file_key, log_action, log_status, log_modality, log_patient_name, log_patient_id, log_study_date) values (now(),$1,$2,$3,$4, $5, $6, $7, $8) returning *`;
     const res = await db.query(stringQuery, Object.values(values))
     return res.rows
 }
 
-export { getAll, post, checkAlreadyExists }
+interface ISearch {study_date?: string, modality?: string, patient_id?: string, patient_name?: string}
+async function search(search: ISearch) {
+
+    function makeWhere(filter: string, index: number) {
+        const prefix_table = 'log_'
+        const logic = filter === 'patient_name' ? ` ilike $${index+1}` : ` = $${index+1}`
+        return prefix_table + filter + logic
+    }
+
+    if (Object.keys(search).length > 0) {
+        console.log(Object.values(search))
+        const filterNames = Object.keys(search)
+        const where = 'where ' + filterNames.map(makeWhere).join(' and ');
+        const stringQuery = `select * from log ${where}`;
+        console.log(stringQuery)
+        const res = await db.query(stringQuery, Object.values(search))
+        return res.rows
+    } 
+}
+
+export { getAll, post, checkAlreadyExists, search, ISearch }

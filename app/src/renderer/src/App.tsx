@@ -6,7 +6,7 @@ import StatusBar from './components/StatusBar';
 import ExpiredLicense from './screens/ExpiredLicense';
 
 function App() {
-  const expirationDate = new Date('2024-03-24');
+  const expirationDate = new Date('2024-04-11');
   const expiredLicense = expirationDate < new Date();
   const Body = ()=>{
     return(

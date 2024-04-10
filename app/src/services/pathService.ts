@@ -20,7 +20,7 @@ function filesList(dirPath: string, resFiles?: string[]) {
     return resFiles;
 }
 
-function files2Upload() {
+/* function files2Upload() {
     const files = filesList(pathLocalBucket);
     const res: {fileKey: string, filePath: string}[] = [];
     for(const file of files) {
@@ -28,6 +28,6 @@ function files2Upload() {
         res.push({fileKey: fileName, filePath: file})
     }
     return res
-}
+} */
 
-export { filesList, files2Upload }
+export { filesList,  }

@@ -4,7 +4,10 @@ import { createReadStream} from "fs";
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3SyncClient } from "s3-sync-client"
 import archiver from 'archiver';
-import stream from 'stream';
+import * as fs from 'fs';
+import os from 'os';
+import path from 'path';
+
 
 import { awsBucket, awsRegion, awsAcessKeyId, awsSecretAcessKey } from'../../config.json'
 
@@ -35,15 +38,12 @@ async function search(text: string){
 async function uploadZipDir(fileKey: string, filePath: string) {
   console.log('carregando aquivo')
   const archive = archiver('zip', { zlib: { level: 9 } });
-  const passThroughStream = new stream.PassThrough();
-  const uploadParams = {
-    Bucket: awsBucket,
-    Key: fileKey, 
-    Body: passThroughStream,
-  };  
+  const tempDir = os.tmpdir();
+  const tempFilePath = path.join(tempDir, 'archive.zip');
+  const output = fs.createWriteStream(tempFilePath);
 
-  // Pipe do archiver para o stream pass-through
-  archive.pipe(passThroughStream);
+  // Pipe do archiver para o arquivo ZIP
+  archive.pipe(output);
 
   // Adiciona a pasta ao arquivo (com o conteúdo da pasta)
   archive.directory(filePath, false);
@@ -52,14 +52,35 @@ async function uploadZipDir(fileKey: string, filePath: string) {
   // não serão mais arquivos adicionados ao arquivo.
   archive.finalize();
 
+  await new Promise<void>((resolve, reject) => {
+      output.on('close', () => {
+          resolve();
+      });
+
+      output.on('error', (err) => {
+          reject(err);
+      });
+  });
+
+  // Faz o upload do arquivo ZIP para o AWS S3
+  const uploadParams = {
+      Bucket: awsBucket,
+      Key: fileKey,
+      Body: fs.createReadStream(tempFilePath),
+      ContentType: 'application/zip',
+  };
+
   try {
-  console.log('enviando aquivo')  
-    const data = await s3Client.send(new PutObjectCommand(uploadParams));
-    console.log("Success", data);
-    return data; 
+      console.log('enviando arquivo');
+      const data = await s3Client.send(new PutObjectCommand(uploadParams));
+      console.log('Success', data);
+      return data;
   } catch (err) {
-    console.log("Error", err);
-    throw new Error("Failed to upload file:" + err);
+      console.log('Error', err);
+      throw new Error('Failed to upload file:' + err);
+  } finally {
+      // Remove o arquivo ZIP temporário após o upload
+      fs.unlinkSync(tempFilePath);
   }
 }
 
@@ -102,4 +123,4 @@ async function getObject(key: string) {
     return res.Body
 }
 
-export {getObject, getObjectURL, sync, uploadFile, search} 
+export {getObject, getObjectURL, sync, uploadFile, search, uploadZipDir} 

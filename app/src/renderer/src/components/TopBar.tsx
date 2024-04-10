@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
+import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,58 +9,23 @@ import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
-import { Autorenew } from '@mui/icons-material';
-import { ipcRenderer } from 'electron';
-
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(3),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    //vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
-}));
+import { Autorenew, } from '@mui/icons-material';
+import { Button, Select, Stack, TextField } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
 export default function TopBar() {
   const navigate = useNavigate()
+
+  const [modalidade, setModalidade] = useState('0');
+  const [estudo, setEstudo] = useState('');
+  const [nome, setNome] = useState('');
+  const [id, setId] = useState('');
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
@@ -86,6 +51,21 @@ export default function TopBar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const handleSearch = ()=>{
+    const search: {
+      study_date?: string;
+      modality?: string;
+      patient_id?: string;
+      patient_name?: string;
+    } = {}
+    nome ? search.patient_name = nome : '';
+    (modalidade && modalidade != '0') ? search.modality = modalidade : ''
+    estudo ?  search.study_date = estudo : ''
+    id ? search.patient_id = id : ''
+    Object.keys(search).length > 0 && window.electronAPI.search(search); 
+    navigate('/search-result')    
+  }
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -104,7 +84,7 @@ export default function TopBar() {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={()=>navigate('/setup')}>Setup</MenuItem>
+      {/* <MenuItem onClick={()=>navigate('/setup')}>Setup</MenuItem> */}
     </Menu>
   );
 
@@ -125,7 +105,7 @@ export default function TopBar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+{/*       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
             <MailIcon />
@@ -144,7 +124,7 @@ export default function TopBar() {
           </Badge>
         </IconButton>
         <p>Notifications</p>
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
@@ -184,19 +164,40 @@ export default function TopBar() {
           >
             DICOM SYNC
           </Typography>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon/>    
-            </SearchIconWrapper>
-            <StyledInputBase    
+          <Stack 
+            direction='row' 
+            sx={{ flexGrow: 1 }} 
+            paddingLeft={5}
+            margin={2} 
+            spacing={2}
+          >
+            <Select 
+              label='Modalidade'
+              placeholder='Modalidade'
+              value={modalidade}
+              onChange={(e)=>setModalidade(e.target.value)}
+            >
+              <MenuItem value='0'>Modalidade</MenuItem>
+              <MenuItem value='CT'>CT</MenuItem>
+              <MenuItem value='CR'>CR</MenuItem>
+              <MenuItem value='DX'>DX</MenuItem>
+            </Select>
+            <TextField type='date' placeholder='Estudo' value={estudo} onChange={(e)=>setEstudo(e.target.value)}/>
+            <TextField type='text' placeholder='Nome' value={nome} onChange={(e)=>setNome(e.target.value)} />
+            <TextField type='text' placeholder='Id' value={id} onChange={(e)=>setId(e.target.value)}/>
+            <Button variant='contained' style={{backgroundColor: '#455a64', borderRadius: 10}} onClick={handleSearch}>
+              <SearchIcon/>     
+            </Button>
+{/*             <StyledInputBase    
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
-              onKeyDown={(e)=> {(e.code==='Enter') && window.electronAPI.search(e.currentTarget.value); navigate('/search-result')}}
-            />
-          </Search>
+              onKeyDown={(e)=> {(e.code==='Enter') && window.electronAPI.search({patient_name: "%maria%", modality: "DX", study_date: '2024-03-28'}); navigate('/search-result')}} //e.currentTarget.value
+            /> */}
+          </Stack>
+
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+{/*             <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
               </Badge>
@@ -209,7 +210,7 @@ export default function TopBar() {
               <Badge badgeContent={17} color="error">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
               size="large"
               edge="end"
